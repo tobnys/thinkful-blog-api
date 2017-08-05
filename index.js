@@ -19,4 +19,34 @@ app.use(morgan("common"));
 
 app.use("/blog-posts", blogRouter);
 
-app.listen(8080, () => console.log("Running on port 8080"));
+let server;
+
+function runServer() {
+    const port = 8080;
+    return new Promise((resolve, reject) => {
+        server = app.listen(port, () => {
+            console.log("app running from promise");
+            resolve(server);
+        }).on("error", err => {
+            reject(err);
+        });
+    });
+}
+
+function closeServer() {
+    return new Promise((resolve, reject) => {
+        server.close(err => {
+            if(err) {
+                reject(err);
+                return;
+            }
+            resolve();
+        });
+    });
+}
+
+if(require.main === module) {
+    runServer().catch(err => console.error(err));
+};
+
+module.exports = {app, runServer, closeServer};
