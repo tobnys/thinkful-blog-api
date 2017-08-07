@@ -20,14 +20,15 @@ router.post("/", jsonParser, (req, res) => {
             return res.status(204);
         }
     }
-    BlogPosts.create(req.body.title, req.body.content, req.body.author, cDate);
-    return res.status(200).send("OK");
+    const newPost = BlogPosts.create(req.body.title, req.body.content, req.body.author, cDate);
+    return res.status(201).send(newPost);
 });
 
 router.delete("/:id", jsonParser, (req, res) => {
     BlogPosts.delete(req.params.id);
-    console.log(`Post ${req.params.id} was deleted.`)
-    return res.status(200);
+    var msg = `Post ${req.params.id} was deleted.`;
+    console.log(msg)
+    return res.status(204).send(msg);
 });
 
 router.put("/:id", jsonParser, (req, res) => {
@@ -36,21 +37,22 @@ router.put("/:id", jsonParser, (req, res) => {
         var field = requiredFields[i];
         if(!(field in req.body)) {
             console.error(`Field ${field} empty in request body`)
-            return res.status(204);
-        }
+            return res.status(204).send();
+        } 
     }
     if(req.params.id !== req.body.id) {
         console.error("ID not matching");
         return res.status(400).send("ID not matching");
     }
     const cDate2 = new Date();
-    BlogPosts.update({
+    const updatedPost = BlogPosts.update({
         id: req.params.id,
         title: req.body.title,
         content: req.body.content,
         author: req.body.author,
         publishDate: cDate2
     })
+    return res.status(204).send(updatedPost);
 });
 
 module.exports = router;

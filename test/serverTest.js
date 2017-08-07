@@ -49,22 +49,18 @@ describe("Blog Posts", function() {
     });
 
     it("should update an item on PUT", function() {
-        let newID;
         return chai.request(app).get("/blog-posts").then(function(res) {
             const newPost = Object.assign(res.body[0], {
                 title: "sampleTitleU",
                 content: "sampleContentU"
             });
 
-            newID = res.body[0].id;
-
-            return chai.request(app).put(`/blog-posts/${newID}`).send(newPost).then(function() {
-                res.should.have.status(204);    
-                res.body.title.should.equal(newPost.title);
-                res.body.content.should.equal(newPost.content);
+            return chai.request(app).put(`/blog-posts/${res.body[0].id}`).send(newPost).then(function(res) {
+                res.should.have.status(204);
             });
         });
     });
+
 
     it('should delete posts on DELETE', function() {
         return chai.request(app)
@@ -78,5 +74,4 @@ describe("Blog Posts", function() {
           });
       });
   });
-
 });
